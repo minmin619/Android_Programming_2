@@ -28,6 +28,8 @@ class Fling(private val puck: View,
             puck.y = ((border.maxY() - border.minY()) / 2).toFloat()
         } else {
             // XXX Write me
+            puck.x = border.randomX(puck.width)
+            puck.y = border.randomY(puck.height)
         }
         // If puck had been made invisible, make it visible now
         puck.visibility = View.VISIBLE
@@ -35,6 +37,11 @@ class Fling(private val puck: View,
 
     private fun success(goalAchieved: () -> Unit) {
         // XXX Write me
+        flingAnimationX.cancel()
+        flingAnimationY.cancel()
+        puck.visibility = View.INVISIBLE
+        goalAchieved()
+
     }
 
     fun makeXFlingAnimation(initVelocity: Float,
@@ -42,6 +49,16 @@ class Fling(private val puck: View,
         return FlingAnimation(puck, DynamicAnimation.X)
             .setFriction(friction)
             // XXX Write me
+            .setStartVelocity(initVelocity)
+            .setMinValue(puckMinX)
+            .setMaxValue(puckMaxX)
+            .addEndListener { _, _, _, _ ->
+                when {
+                    puck.x <= puckMinX -> puck.x = puckMinX
+                    puck.x >= puckMaxX -> puck.x = puckMaxX
+                }
+                checkGoal(goalAchieved)
+            }
     }
 
     fun makeYFlingAnimation(initVelocity: Float,
@@ -50,6 +67,24 @@ class Fling(private val puck: View,
         return FlingAnimation(puck, DynamicAnimation.Y)
             .setFriction(friction)
             // XXX Write me
+            .setStartVelocity(initVelocity)
+            .setMinValue(puckMinY)
+            .setMaxValue(puckMaxY)
+            .addEndListener { _, _, _, _ ->
+                when {
+                    puck.y <= puckMinY -> puck.y = puckMinY
+                    puck.y >= puckMaxY -> puck.y = puckMaxY
+                }
+                checkGoal(goalAchieved)
+            }
+    }
+    private fun checkGoal(goalAchieved: () -> Unit) {
+        when (goalBorder) {
+            Border.Type.T -> if (puck.y <= puckMinY) success(goalAchieved)
+            Border.Type.B -> if (puck.y >= puckMaxY) success(goalAchieved)
+            Border.Type.S -> if (puck.x <= puckMinX) success(goalAchieved)
+            Border.Type.E -> if (puck.x >= puckMaxX) success(goalAchieved)
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -69,6 +104,11 @@ class Fling(private val puck: View,
                 velocityY: Float
             ): Boolean {
                 // XXX Write me
+                flingAnimationX = makeXFlingAnimation(velocityX, goalAchieved)
+                flingAnimationY = makeYFlingAnimation(velocityY, goalAchieved)
+                flingAnimationX.start()
+                flingAnimationY.start()
+
                 return true
             }
         }
@@ -86,9 +126,14 @@ class Fling(private val puck: View,
     @SuppressLint("ClickableViewAccessibility")
     fun deactivatePuck() {
         // XXX Write me
+        puck.setOnTouchListener(null)
     }
 
     fun playRound(goalAchieved: () -> Unit) {
         // XXX Write me
+        border.resetBorderColors()
+        goalBorder = border.nextGoal()
+        placePuck()
+        listenPuck(goalAchieved)
     }
 }

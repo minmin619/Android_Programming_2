@@ -54,12 +54,58 @@
 
     <!-- Use Views to define the borders -->
 
-    <View
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:id="@+id/puck"
-        android:background="#FF006400"
-    />
+
+
+        <!-- 上邊界 -->
+        <View
+            android:id="@+id/frameT"
+            android:layout_width="0dp"
+            android:layout_height="10dp"
+            android:background="#000000"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- 下邊界 -->
+        <View
+            android:id="@+id/frameB"
+            android:layout_width="0dp"
+            android:layout_height="10dp"
+            android:background="#000000"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- 左邊界 -->
+        <View
+            android:id="@+id/frameS"
+            android:layout_width="10dp"
+            android:layout_height="0dp"
+            android:background="#000000"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/frameT"
+            app:layout_constraintBottom_toTopOf="@+id/frameB"/>
+
+        <!-- 右邊界 -->
+        <View
+            android:id="@+id/frameE"
+            android:layout_width="10dp"
+            android:layout_height="0dp"
+            android:background="#000000"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/frameT"
+            app:layout_constraintBottom_toTopOf="@+id/frameB"/>
+
+        <!-- Puck（可移動的方塊） -->
+        <View
+            android:id="@+id/puck"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="#FF006400"
+            app:layout_constraintTop_toBottomOf="@+id/frameT"
+            app:layout_constraintStart_toEndOf="@+id/frameS"/>
+
+
     <!-- Constrain the puck to the upper left corner of gameFrame -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
